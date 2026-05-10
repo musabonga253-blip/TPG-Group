@@ -6,12 +6,30 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:student_assistant_app/models/student_application.dart';
 
-class ApplicationViewmodel extends StatelessWidget {
-  const ApplicationViewmodel({super.key});
+class ApplicationViewmodel extends ChangeNotifier {
+  //Student application data
+  StudentApplication studentApplication = StudentApplication(
+    id: 001,
+    studentName: "John Doe",
+    yearOfStudy: "3rd year",
+    module1: "SOD316C",
+    module2: "TPG316C",
+    status: "Pending",
+  );
 
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
+  //getters
+  int get id => studentApplication.id;
+  String get studentName => studentApplication.studentName;
+  String get yearOfStudy => studentApplication.yearOfStudy;
+  String get module1 => studentApplication.module1;
+  String? get module2 => studentApplication.module2;
+  String get status => studentApplication.status;
+
+  // Method to update the application status
+  void updateStatus(String newStatus) {
+    studentApplication = studentApplication.copyWith(status: newStatus);
+    notifyListeners();
   }
 }
