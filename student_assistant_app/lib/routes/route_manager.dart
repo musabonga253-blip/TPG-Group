@@ -1,3 +1,10 @@
+/*
+ * Student Numbers: 224022456, 224111760, 223089499, 223082118, 224107046, 223086046, 220025661, 224090026
+ * Student Names  : Musa Bonga, Sibusiso Lukhele, Noluthando Ndebele, Nombulelo Menyuka, Siphosethu Mbasa, Luyanda P Mtungwa, Tiarina Jean Iye, Kamohelo Tlotliso Junior Phatsoane
+ * Group          : GROUP_H1
+ * Subject        : Technical Programming III (TPG316C)
+ */
+
 import 'package:flutter/material.dart';
 import '../views/admin_dashboard_screen.dart';
 import '../views/application_details_screen.dart';
@@ -11,7 +18,7 @@ class RouteManager {
   static const String applicationDetailsRoute = '/Details';
   static const String adminDashboardRoute = '/admin-dashboard';
 
-  static Route<dynamic> generateRoute(RouteSettings settings) {
+  /* static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case authenticationRoute:
         return MaterialPageRoute(builder: (_) => const AuthenticationScreen());
@@ -27,5 +34,5 @@ class RouteManager {
       default:
         return throw Exception('Route not found: ${settings.name}');  
     }
-  }
+  }*/
 }
