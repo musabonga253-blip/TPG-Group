@@ -5,12 +5,6 @@
  * Subject        : Technical Programming III (TPG316C)
  */
 
-import 'package:flutter/material.dart';
-import '../views/admin_dashboard_screen.dart';
-import '../views/application_details_screen.dart';
-import '../views/application_form_screen.dart';
-import '../views/home_screen.dart';
-
 class RouteManager {
   static const String authenticationRoute = '/';
   static const String homeRoute = '/home';

@@ -9,8 +9,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/application_viewmodel.dart';
 import '../route_manager.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Supabase.initialize(
+    url: 'https://your-supabase-url.supabase.co',
+    anonKey: 'student-application-key',
+  );
   runApp(
     ChangeNotifierProvider(
       create: (_) => ApplicationViewmodel(),
