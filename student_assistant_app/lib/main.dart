@@ -13,12 +13,11 @@ import '../route_manager.dart';
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (_) => ApplicationViewModel(),
+      create: (_) => ApplicationViewmodel(),
       child: const MyApp(),
     ),
   );
 }
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

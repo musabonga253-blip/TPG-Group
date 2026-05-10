@@ -4,3 +4,14 @@
  * Group          : GROUP_H1
  * Subject        : Technical Programming III (TPG316C)
  */
+
+import 'package:flutter/material.dart';
+
+class ApplicationViewmodel extends StatelessWidget {
+  const ApplicationViewmodel({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
