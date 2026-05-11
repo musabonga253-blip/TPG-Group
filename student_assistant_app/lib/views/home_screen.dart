@@ -18,60 +18,41 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   @override
   void initState() {
     super.initState();
-
     Future.microtask(() {
+      if (!mounted) return;
       context.read<ApplicationViewModel>().fetchApplications();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Student Home"),
-      ),
-
+      appBar: AppBar(title: const Text("Student Home")),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushNamed(
-            context,
-            RouteManager.applicationForm,
-          );
+          Navigator.pushNamed(context, RouteManager.applicationForm);
         },
         child: const Icon(Icons.add),
       ),
-
       body: Consumer<ApplicationViewModel>(
         builder: (context, vm, child) {
-
           if (vm.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
-
           if (vm.applications.isEmpty) {
-            return const Center(
-              child: Text("No applications submitted"),
-            );
+            return const Center(child: Text("No applications submitted"));
           }
-
           return ListView.builder(
             itemCount: vm.applications.length,
             itemBuilder: (context, index) {
-
               final app = vm.applications[index];
-
               return Card(
                 child: ListTile(
                   title: Text(app.module1),
                   subtitle: Text("Status: ${app.status}"),
-
                   onTap: () {
                     Navigator.pushNamed(
                       context,
@@ -88,4 +69,5 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+
  

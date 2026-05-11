@@ -9,8 +9,8 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Supabase.initialize(
-    url: 'https://your-supabase-url.supabase.co',
-    anonKey: 'student-application-key',
+    url: 'https://pznqtmshimleaeizqvtr.supabase.co',
+    anonKey: 'sb_publishable_yhkPBBZnFNm_g11ETlDLRw_fCdmsfpG',
   );
 
   runApp(
@@ -36,4 +36,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
