@@ -8,7 +8,7 @@
 import 'package:flutter/material.dart';
 import 'package:student_assistant_app/models/student_application.dart';
 
-class ApplicationViewmodel extends ChangeNotifier {
+class ApplicationViewModel extends ChangeNotifier {
   //Student application data
   StudentApplication studentApplication = StudentApplication(
     id: 001,
