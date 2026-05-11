@@ -4,29 +4,42 @@
  * Group          : GROUP_H1
  * Subject        : Technical Programming III (TPG316C)
  */
+import 'package:flutter/material.dart';
+/*import '../models/student_application.dart'; */
+import '../views/login_screen.dart';
+import '../views/home_screen.dart';
+import '../views/admin_dashboard_screen.dart';
+import '../views/application_form_screen.dart';
+import '../views/application_details_screen.dart';
 
 class RouteManager {
-  static const String authenticationRoute = '/';
-  static const String homeRoute = '/home';
-  static const String applicationFormRoute = '/application-form';
-  static const String applicationDetailsRoute = '/Details';
-  static const String adminDashboardRoute = '/admin-dashboard';
+  static const String login = '/login';
+  static const String home = '/home';
+  static const String adminDashboard = '/adminDashboard';
+  static const String applicationForm = '/applicationForm';
+  static const String applicationDetails = '/applicationDetails';
 
-  /* static Route<dynamic> generateRoute(RouteSettings settings) {
+  static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
-      case authenticationRoute:
-        return MaterialPageRoute(builder: (_) => const AuthenticationScreen());
-      case homeRoute:
+      case login:
+        return MaterialPageRoute(builder: (_) => const LoginScreen());
+      case home:
         return MaterialPageRoute(builder: (_) => const HomeScreen());
-      case applicationFormRoute:
-        return MaterialPageRoute(builder: (_) => const ApplicationFormScreen());
-      case applicationDetailsRoute:
-        final message = settings.arguments as String; //dynamic route
-        return MaterialPageRoute(builder: (_) => ApplicationDetailsScreen(message: message));
-      case adminDashboardRoute:
+      case adminDashboard:
         return MaterialPageRoute(builder: (_) => const AdminDashboardScreen());
+      case applicationForm:
+        return MaterialPageRoute(builder: (_) => const ApplicationFormScreen());
+      case applicationDetails:
+        return MaterialPageRoute(
+          builder: (_) => const ApplicationDetailsScreen(),
+            settings: settings,
+        );
       default:
-        return throw Exception('Route not found: ${settings.name}');  
+        return MaterialPageRoute(
+          builder: (_) => const Scaffold(
+            body: Center(child: Text("Route not found")),
+          ),
+        );
     }
-  }*/
+  }
 }

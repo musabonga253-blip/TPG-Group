@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/application_viewmodel.dart';
 import '../viewmodels/auth_viewmodel.dart';
-import '../route_manager.dart';
+import 'routes/route_manager.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
