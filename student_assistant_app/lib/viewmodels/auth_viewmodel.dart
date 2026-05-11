@@ -12,22 +12,29 @@ class AuthViewModel extends ChangeNotifier {
 
   Future<bool> login(String username, String password) async {
 
-  errorMessage = null;
+    errorMessage = null;
 
-  if (username == "admin" && password == "admin123") {
-    isAdmin = true;
-    notifyListeners();
-    return true;
+    if (username == "admin" && password == "admin123") {
+      isAdmin = true;
+      notifyListeners();
+      return true;
 
-  } else if (username == "student" && password == "student123") {
-    isAdmin = false;
-    notifyListeners();
-    return true;
+    } else if (username == "student" && password == "student123") {
+      isAdmin = false;
+      notifyListeners();
+      return true;
 
-  } else {
-    errorMessage = "Invalid credentials";
-    notifyListeners();
-    return false;
+    } else {
+      errorMessage = "Invalid credentials";
+      notifyListeners();
+      return false;
+    }
   }
-}
+
+  // Added logout method
+  void logout() {
+    isAdmin = false;
+    errorMessage = null;
+    notifyListeners();
+  }
 }
