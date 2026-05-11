@@ -15,7 +15,7 @@ class ApplicationViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
 
   // LIST OF APPLICATIONS
-  List<StudentApplication> _applications = [
+  final List<StudentApplication> _applications = [
 
     StudentApplication(
       id: 1,
