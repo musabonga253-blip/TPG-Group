@@ -38,7 +38,7 @@ class RouteManager {
       default:
         return MaterialPageRoute(
           builder: (_) =>
-              const Scaffold(body: Center(child: Text("Route not found"))),
+             const HomeScreen(),
         );
     }
   }
