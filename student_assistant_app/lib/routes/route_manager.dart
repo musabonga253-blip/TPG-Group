@@ -29,7 +29,8 @@ class RouteManager {
       case adminDashboard:
         return MaterialPageRoute(builder: (_) => const AdminDashboardScreen());
       case applicationForm:
-        return MaterialPageRoute(builder: (_) => const ApplicationFormScreen());
+      final application = settings.arguments as StudentApplication?; // Optional argument for editing
+        return MaterialPageRoute(builder: (_) => ApplicationFormScreen(existingApplication: application));
       case RouteManager.applicationDetails:
         final application = settings.arguments as StudentApplication; //
         return MaterialPageRoute(

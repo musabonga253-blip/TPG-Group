@@ -33,7 +33,7 @@ class ApplicationDetailsScreen extends StatelessWidget {
             Text(''),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, RouteManager.applicationForm);
+                Navigator.pushNamed(context, RouteManager.applicationForm, arguments: application);
               },
               child: const Text("Edit Details"),
             ),

@@ -13,7 +13,8 @@ import '../models/student_application.dart';
 import '../routes/route_manager.dart';
 
 class ApplicationFormScreen extends StatefulWidget {
-  const ApplicationFormScreen({super.key});
+  final StudentApplication? existingApplication; // Optional parameter for editing
+  const ApplicationFormScreen({super.key, this.existingApplication});
 
   @override
   State<ApplicationFormScreen> createState() => _ApplicationFormScreenState();
@@ -32,6 +33,22 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
   // Added: toggles for second module and eligibility
   bool _addSecondModule = false;
   bool _confirmedEligibility = false;
+
+  @override //logic to pre-fill form if we're editing an existing application
+void initState() {
+  super.initState();
+  final app = widget.existingApplication;
+  if (app != null) {
+    studentNumberController.text = app.studentName;
+    yearOfStudyController.text = app.yearOfStudy;
+    courseController.text = app.module1;
+    if (app.module2 != null) {
+      _addSecondModule = true;
+      secondModuleController.text = app.module2!;
+    }
+    _confirmedEligibility = true; // Pre-confirm since it was already submitted
+  }
+}
 
   @override
   void dispose() {
