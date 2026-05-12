@@ -40,4 +40,6 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
     return true;
   }
+
+  void logout() {}
 }
