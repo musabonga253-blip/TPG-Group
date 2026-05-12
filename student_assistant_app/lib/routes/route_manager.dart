@@ -5,6 +5,7 @@
  * Subject        : Technical Programming III (TPG316C)
  */
 import 'package:flutter/material.dart';
+import 'package:student_assistant_app/models/student_application.dart';
 /*import '../models/student_application.dart'; */
 import '../views/login_screen.dart';
 import '../views/home_screen.dart';
@@ -29,16 +30,15 @@ class RouteManager {
         return MaterialPageRoute(builder: (_) => const AdminDashboardScreen());
       case applicationForm:
         return MaterialPageRoute(builder: (_) => const ApplicationFormScreen());
-      case applicationDetails:
+      case RouteManager.applicationDetails:
+        final application = settings.arguments as StudentApplication; //
         return MaterialPageRoute(
-          builder: (_) => const ApplicationDetailsScreen(),
-            settings: settings,
+          builder: (_) => ApplicationDetailsScreen(application: application),
         );
       default:
         return MaterialPageRoute(
-          builder: (_) => const Scaffold(
-            body: Center(child: Text("Route not found")),
-          ),
+          builder: (_) =>
+              const Scaffold(body: Center(child: Text("Route not found"))),
         );
     }
   }

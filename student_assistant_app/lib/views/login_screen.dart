@@ -5,67 +5,62 @@
  * Subject        : Technical Programming III (TPG316C)
  * Question       : Login Screen
  */
- 
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:student_assistant_app/service%20layer/auth_service.dart';
 import '../viewmodels/auth_viewmodel.dart';
 import '../routes/route_manager.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
- 
+
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
- 
+
 class _LoginScreenState extends State<LoginScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final loginNameController = TextEditingController();
-  final loginPasswordController = TextEditingController();
- 
-  @override
-  void dispose() {
-    loginNameController.dispose();
-    loginPasswordController.dispose();
-    super.dispose();
-  }
- 
-Future<void> _handleLogin() async {
-  if (_formKey.currentState?.validate() != true) return;
+  //Retrieve AuthService instance
+  final authService = AuthService();
 
-  final authViewModel = context.read<AuthViewModel>();
+  //text controllers
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
 
-  final success = await authViewModel.login(
-    loginNameController.text.trim(),
-    loginPasswordController.text.trim(),
-  );
+  //When login button is pressed
+  void _handleLogin() async {
+    final email = _emailController.text;
+    final password = _passwordController.text;
 
-  if (!mounted) return; 
-
-  if (success) {
-    if (authViewModel.isAdmin) {
-      Navigator.pushReplacementNamed(context, RouteManager.adminDashboard);
-    } else {
-      Navigator.pushReplacementNamed(context, RouteManager.home);
+    //Attempt login
+    try {
+      await authService.signInWithEmailPassword(email, password);
+      //Navigate to home screen on success
+    } catch (e) {
+      //If anything goes wrong, show error message
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Login failed: $e')));
+      }
     }
   }
-}
 
- 
+  //UI
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+      appBar: AppBar(title: const Text('Login')),
+
+      body: Consumer<AuthViewModel>(
+        builder: (context, auth, child) {
+          return ListView(
+            padding: const EdgeInsets.all(16.0),
             children: [
- 
               TextFormField(
-                controller: loginNameController,
+                controller: _emailController,
                 decoration: const InputDecoration(
-                  labelText: 'Username',
+                  labelText: 'Email',
                   border: OutlineInputBorder(),
                 ),
                 validator: (value) {
@@ -76,9 +71,9 @@ Future<void> _handleLogin() async {
                 },
               ),
               const SizedBox(height: 15),
- 
+
               TextFormField(
-                controller: loginPasswordController,
+                controller: _passwordController,
                 obscureText: true,
                 decoration: const InputDecoration(
                   labelText: 'Password',
@@ -95,28 +90,27 @@ Future<void> _handleLogin() async {
                 },
               ),
               const SizedBox(height: 16),
- 
-              // Show error message from ViewModel if login fails
-              Consumer<AuthViewModel>(
-                builder: (context, auth, child) {
-                  if (auth.errorMessage != null) {
-                    return Text(
-                      auth.errorMessage!,
-                      style: const TextStyle(color: Colors.red),
-                    );
-                  }
-                  return const SizedBox.shrink();
-                },
-              ),
-              const SizedBox(height: 16),
- 
+
               ElevatedButton(
                 onPressed: _handleLogin,
                 child: const Text('Login'),
               ),
+
+              const SizedBox(height: 16),
+
+              //supposed to take you to the sign up screen but It needs to be implemented first
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, RouteManager.home);
+                },
+                child: const Text(
+                  'Don\'t have an account? Sign up',
+                  style: TextStyle(color: Colors.blue),
+                ),
+              ),
             ],
-          ),
-        ),
+          );
+        },
       ),
     );
   }
