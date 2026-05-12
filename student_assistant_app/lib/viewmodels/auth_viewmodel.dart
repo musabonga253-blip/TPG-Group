@@ -5,36 +5,39 @@
  * Subject        : Technical Programming III (TPG316C)
  */
 import 'package:flutter/material.dart';
+import '../service layer/auth_service.dart';
 
 class AuthViewModel extends ChangeNotifier {
-  bool isAdmin = false;
-  String? errorMessage;
+  final AuthService _authService = AuthService();
+  bool _isAdmin = false;
+  bool _isLoading = false;
+  String? _errorMessage;
 
-  Future<bool> login(String username, String password) async {
+  bool get isAdmin => _isAdmin;
 
-    errorMessage = null;
+  bool get isLoading => _isLoading;
 
-    if (username == "admin" && password == "admin123") {
-      isAdmin = true;
-      notifyListeners();
-      return true;
+  String? get errorMessage => _errorMessage;
 
-    } else if (username == "student" && password == "student123") {
-      isAdmin = false;
-      notifyListeners();
-      return true;
+  Future<bool> login(String email, String password) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
 
-    } else {
-      errorMessage = "Invalid credentials";
+    final result = await _authService.signIn(email, password);
+
+    _isLoading = false;
+
+    if (!result.success) {
+      _errorMessage = result.message;
       notifyListeners();
       return false;
     }
-  }
 
-  // Added logout method
-  void logout() {
-    isAdmin = false;
-    errorMessage = null;
+    _isAdmin = result.isAdmin;
+    _errorMessage = null;
+
     notifyListeners();
+    return true;
   }
 }
