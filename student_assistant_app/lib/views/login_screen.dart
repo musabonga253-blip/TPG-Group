@@ -27,6 +27,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  bool _isPasswordVisible = false; //State variable to track password visibility
+
   //When login button is pressed
   void _handleLogin() async {
     final email = _emailController.text;
@@ -74,10 +76,21 @@ class _LoginScreenState extends State<LoginScreen> {
 
               TextFormField(
                 controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
+                obscureText: !_isPasswordVisible, //Hide password by default
+                decoration: InputDecoration(
                   labelText: 'Password',
                   border: OutlineInputBorder(),
+                  //Icon button to toggle password visibility
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    },
+                  ),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
