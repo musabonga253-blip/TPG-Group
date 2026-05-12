@@ -31,7 +31,7 @@ class RouteManager {
       case applicationForm:
         return MaterialPageRoute(builder: (_) => const ApplicationFormScreen());
       case RouteManager.applicationDetails:
-        final application = settings.arguments as StudentApplication; // ✅
+        final application = settings.arguments as StudentApplication; //
         return MaterialPageRoute(
           builder: (_) => ApplicationDetailsScreen(application: application),
         );
