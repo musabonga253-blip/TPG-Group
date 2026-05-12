@@ -5,7 +5,7 @@
  * Subject        : Technical Programming III (TPG316C)
  * Question       : Login Screen
  */
- 
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/auth_viewmodel.dart';
@@ -13,45 +13,44 @@ import '../routes/route_manager.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
- 
+
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
- 
+
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final loginNameController = TextEditingController();
   final loginPasswordController = TextEditingController();
- 
+
   @override
   void dispose() {
     loginNameController.dispose();
     loginPasswordController.dispose();
     super.dispose();
   }
- 
-Future<void> _handleLogin() async {
-  if (_formKey.currentState?.validate() != true) return;
 
-  final authViewModel = context.read<AuthViewModel>();
+  Future<void> _handleLogin() async {
+    if (_formKey.currentState?.validate() != true) return;
 
-  final success = await authViewModel.login(
-    loginNameController.text.trim(),
-    loginPasswordController.text.trim(),
-  );
+    final authViewModel = context.read<AuthViewModel>();
 
-  if (!mounted) return; 
+    final success = await authViewModel.login(
+      loginNameController.text.trim(),
+      loginPasswordController.text.trim(),
+    );
 
-  if (success) {
-    if (authViewModel.isAdmin) {
-      Navigator.pushReplacementNamed(context, RouteManager.adminDashboard);
-    } else {
-      Navigator.pushReplacementNamed(context, RouteManager.home);
+    if (!mounted) return;
+
+    if (success) {
+      if (authViewModel.isAdmin) {
+        Navigator.pushReplacementNamed(context, RouteManager.adminDashboard);
+      } else {
+        Navigator.pushReplacementNamed(context, RouteManager.home);
+      }
     }
   }
-}
 
- 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -61,7 +60,6 @@ Future<void> _handleLogin() async {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
- 
               TextFormField(
                 controller: loginNameController,
                 decoration: const InputDecoration(
@@ -76,7 +74,7 @@ Future<void> _handleLogin() async {
                 },
               ),
               const SizedBox(height: 15),
- 
+
               TextFormField(
                 controller: loginPasswordController,
                 obscureText: true,
@@ -95,21 +93,22 @@ Future<void> _handleLogin() async {
                 },
               ),
               const SizedBox(height: 16),
- 
+
               // Show error message from ViewModel if login fails
               Consumer<AuthViewModel>(
                 builder: (context, auth, child) {
+                  if (auth.isLoading) return CircularProgressIndicator();
                   if (auth.errorMessage != null) {
                     return Text(
                       auth.errorMessage!,
-                      style: const TextStyle(color: Colors.red),
+                      style: TextStyle(color: Colors.red),
                     );
                   }
                   return const SizedBox.shrink();
                 },
               ),
               const SizedBox(height: 16),
- 
+
               ElevatedButton(
                 onPressed: _handleLogin,
                 child: const Text('Login'),
