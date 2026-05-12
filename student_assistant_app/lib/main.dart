@@ -31,6 +31,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Student Assistant App',
+      debugShowCheckedModeBanner: false,
       initialRoute: RouteManager.login,
       onGenerateRoute: RouteManager.generateRoute,
     );
