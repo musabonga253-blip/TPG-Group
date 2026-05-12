@@ -5,41 +5,51 @@
  * Subject        : Technical Programming III (TPG316C)
  */
 import 'package:flutter/material.dart';
-import '../service layer/auth_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthViewModel extends ChangeNotifier {
-  final AuthService _authService = AuthService();
-  bool _isAdmin = false;
+  //Supabase client instance that we will use to interact with our backend
+  final SupabaseClient _supabase = Supabase.instance.client;
+
+  //State variables to track loading, errors, and user role
+  final bool _isAdmin = false;
   bool _isLoading = false;
   String? _errorMessage;
 
+  //Getters to expose state to the UI
   bool get isAdmin => _isAdmin;
-
   bool get isLoading => _isLoading;
-
   String? get errorMessage => _errorMessage;
+  bool get isLoggedIn => _supabase.auth.currentSession != null;
 
-  Future<bool> login(String email, String password) async {
+  String? get currentUserEmail => _supabase.auth.currentUser?.email;
+  String? get currentUSerId => _supabase.auth.currentUser?.id;
+
+  //Method to handle user login
+  Future<bool> signUpWithEmail(String email, String password) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
-    final result = await _authService.signIn(email, password);
-
-    _isLoading = false;
-
-    if (!result.success) {
-      _errorMessage = result.message;
-      notifyListeners();
+    //attempt to sign up the user with Supabase auth
+    try {
+      final response = await _supabase.auth.signUp(
+        email: email.trim(),
+        password: password,
+      );
+      return response.user != null;
+    } catch (e) {
+      _errorMessage = e.toString();
       return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
-
-    _isAdmin = result.isAdmin;
-    _errorMessage = null;
-
-    notifyListeners();
-    return true;
   }
 
-  void logout() {}
+  //Signs out the current user
+  Future<void> signOut() async {
+    await _supabase.auth.signOut();
+    notifyListeners();
+  }
 }

@@ -1,44 +1,33 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-final supabase = Supabase.instance.client;
-
 class AuthService {
-  Future<AuthResult> signIn(String email, String password) async {
-    final response = await supabase.auth.signInWithPassword(
+  final _supabase = Supabase.instance.client;
+
+  //Sign in with email and password
+  Future<AuthResponse> signInWithEmailPassword(
+    String email,
+    String password,
+  ) async {
+    return await _supabase.auth.signInWithPassword(
       email: email,
       password: password,
     );
-
-    final userId = response.user?.id;
-
-    if (userId == null) {
-      return AuthResult(
-        success: false,
-        isAdmin: false,
-        message: "Invalid credentials. Please try again.",
-      );
-    }
-
-    final role = await fetchUserRole(userId);
-
-    return AuthResult(success: true, isAdmin: role == 'admin');
   }
 
-  Future<String> fetchUserRole(String userId) async {
-    final data = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', userId)
-        .single();
-
-    return data['role'];
+  //Sign up
+  Future<void> signUpWithEmail(String email, String password) async {
+    await _supabase.auth.signUp(email: email, password: password);
   }
-}
 
-class AuthResult {
-  final bool success;
-  final bool isAdmin;
-  final String? message;
+  //Sign out
+  Future<void> signOut() async {
+    await _supabase.auth.signOut();
+  }
 
-  AuthResult({required this.success, required this.isAdmin, this.message});
+  //Get user email
+  String? getCurrentUserEmail() {
+    final session = _supabase.auth.currentSession;
+    final user = session?.user;
+    return user?.email;
+  }
 }

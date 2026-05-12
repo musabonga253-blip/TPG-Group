@@ -22,8 +22,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() =>
-        context.read<ApplicationViewModel>().fetchApplications());
+    Future.microtask(
+      () => context.read<ApplicationViewModel>().fetchApplications(),
+    );
+  }
+
+  void logOut() async {
+    await AuthViewModel().signOut();
   }
 
   @override
@@ -33,9 +38,10 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         title: const Text('Admin Dashboard'),
         automaticallyImplyLeading: false,
         actions: [
+          // Logout button
           TextButton(
             onPressed: () {
-              context.read<AuthViewModel>().logout();
+              context.read<AuthViewModel>().signOut();
               Navigator.pushReplacementNamed(context, RouteManager.login);
             },
             child: const Text('Logout', style: TextStyle(color: Colors.white)),
@@ -44,12 +50,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       ),
       body: Consumer<ApplicationViewModel>(
         builder: (context, appViewModel, child) {
-
           // No applications yet
           if (appViewModel.applications.isEmpty) {
-            return const Center(
-              child: Text('No applications submitted yet.'),
-            );
+            return const Center(child: Text('No applications submitted yet.'));
           }
 
           // List of all applications
