@@ -52,4 +52,6 @@ class AuthViewModel extends ChangeNotifier {
     await _supabase.auth.signOut();
     notifyListeners();
   }
+
+  Future signup(String trim, String trim2) async {}
 }

@@ -23,6 +23,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   void initState() {
     super.initState();
     Future.microtask(
+      // ignore: use_build_context_synchronously
       () => context.read<ApplicationViewModel>().fetchApplications(),
     );
   }

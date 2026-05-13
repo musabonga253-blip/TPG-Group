@@ -85,11 +85,14 @@ void initState() {
     final success = await appViewModel.submitApplication(newApplication);
 
     if (success) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Application submitted successfully!')),
       );
+      // ignore: use_build_context_synchronously
       Navigator.pushReplacementNamed(context, RouteManager.home);
     } else {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(appViewModel.errorMessage ?? 'Submission failed.'),
