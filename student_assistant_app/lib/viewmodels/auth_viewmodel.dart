@@ -25,7 +25,7 @@ class AuthViewModel extends ChangeNotifier {
   String? get currentUserEmail => _supabase.auth.currentUser?.email;
   String? get currentUSerId => _supabase.auth.currentUser?.id;
 
-  //Method to handle user login
+  //Method to handle user sign up
   Future<bool> signUpWithEmail(String email, String password) async {
     _isLoading = true;
     _errorMessage = null;
@@ -34,6 +34,27 @@ class AuthViewModel extends ChangeNotifier {
     //attempt to sign up the user with Supabase auth
     try {
       final response = await _supabase.auth.signUp(
+        email: email.trim(),
+        password: password,
+      );
+      return response.user != null;
+    } catch (e) {
+      _errorMessage = e.toString();
+      return false;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  //Sign In
+  Future<bool> signInWithEmailPassword(String email, String password) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final response = await _supabase.auth.signInWithPassword(
         email: email.trim(),
         password: password,
       );

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../routes/route_manager.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
