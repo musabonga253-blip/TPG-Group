@@ -6,6 +6,7 @@
  */
 import 'package:flutter/material.dart';
 import 'package:student_assistant_app/models/student_application.dart';
+import 'package:student_assistant_app/views/signup_screen.dart';
 /*import '../models/student_application.dart'; */
 import '../views/login_screen.dart';
 import '../views/home_screen.dart';
@@ -14,6 +15,7 @@ import '../views/application_form_screen.dart';
 import '../views/application_details_screen.dart';
 
 class RouteManager {
+  static const String signUp = '/signUp';
   static const String login = '/login';
   static const String home = '/home';
   static const String adminDashboard = '/adminDashboard';
@@ -22,6 +24,8 @@ class RouteManager {
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case signUp:
+        return MaterialPageRoute(builder: (_) => const SignupScreen());
       case login:
         return MaterialPageRoute(builder: (_) => const LoginScreen());
       case home:
@@ -29,18 +33,20 @@ class RouteManager {
       case adminDashboard:
         return MaterialPageRoute(builder: (_) => const AdminDashboardScreen());
       case applicationForm:
-      final application = settings.arguments as StudentApplication?; // Optional argument for editing
-        return MaterialPageRoute(builder: (_) => ApplicationFormScreen(existingApplication: application));
+        final application =
+            settings.arguments
+                as StudentApplication?; // Optional argument for editing
+        return MaterialPageRoute(
+          builder: (_) =>
+              ApplicationFormScreen(existingApplication: application),
+        );
       case RouteManager.applicationDetails:
         final application = settings.arguments as StudentApplication; //
         return MaterialPageRoute(
           builder: (_) => ApplicationDetailsScreen(application: application),
         );
       default:
-        return MaterialPageRoute(
-          builder: (_) =>
-             const HomeScreen(),
-        );
+        return MaterialPageRoute(builder: (_) => const HomeScreen());
     }
   }
 }

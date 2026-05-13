@@ -24,6 +24,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final authService = AuthService();
 
   //text controllers
+  final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -38,6 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       await authService.signInWithEmailPassword(email, password);
       //Navigate to home screen on success
+      Navigator.pushNamed(context, RouteManager.home);
     } catch (e) {
       //If anything goes wrong, show error message
       if (mounted) {
@@ -54,76 +56,79 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Login')),
 
-      body: Consumer<AuthViewModel>(
-        builder: (context, auth, child) {
-          return ListView(
-            padding: const EdgeInsets.all(16.0),
-            children: [
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your username';
-                  }
-                  return null;
-                },
+      body: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            TextFormField(
+              controller: _emailController,
+              decoration: const InputDecoration(
+                labelText: 'Email',
+                border: OutlineInputBorder(),
               ),
-              const SizedBox(height: 15),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your username';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 15),
 
-              TextFormField(
-                controller: _passwordController,
-                obscureText: !_isPasswordVisible, //Hide password by default
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  border: OutlineInputBorder(),
-                  //Icon button to toggle password visibility
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _isPasswordVisible = !_isPasswordVisible;
-                      });
-                    },
+            TextFormField(
+              controller: _passwordController,
+              obscureText: !_isPasswordVisible, //Hide password by default
+              decoration: InputDecoration(
+                labelText: 'Password',
+                border: OutlineInputBorder(),
+                //Icon button to toggle password visibility
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _isPasswordVisible
+                        ? Icons.visibility
+                        : Icons.visibility_off,
                   ),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your password';
-                  }
-                  if (value.length < 6) {
-                    return 'Password must be at least 6 characters';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              ElevatedButton(
-                onPressed: _handleLogin,
-                child: const Text('Login'),
-              ),
-
-              const SizedBox(height: 16),
-
-              //supposed to take you to the sign up screen but It needs to be implemented first
-              GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(context, RouteManager.home);
-                },
-                child: const Text(
-                  'Don\'t have an account? Sign up',
-                  style: TextStyle(color: Colors.blue),
+                  onPressed: () {
+                    setState(() {
+                      _isPasswordVisible = !_isPasswordVisible;
+                    });
+                  },
                 ),
               ),
-            ],
-          );
-        },
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter your password';
+                }
+                if (value.length < 6) {
+                  return 'Password must be at least 6 characters';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+
+            Consumer<AuthViewModel>(
+              builder: (context, authViewModel, child) {
+                return ElevatedButton(
+                  onPressed: _handleLogin,
+                  child: const Text('Login'),
+                );
+              },
+            ),
+            const SizedBox(height: 16),
+
+            //supposed to take you to the sign up screen but It needs to be implemented first
+            GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, RouteManager.signUp);
+              },
+              child: const Text(
+                'Don\'t have an account? Sign up',
+                style: TextStyle(color: Colors.blue),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
