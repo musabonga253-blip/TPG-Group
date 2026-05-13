@@ -18,12 +18,13 @@ class ApplicationDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Application Details")),
+
       body: Center(
         child: Column(
           children: [
             Icon(Icons.account_circle, size: 100, color: Colors.blueGrey),
             Text(''),
-            //Text('Application ID: ${application.id}'),
+            Text('Application ID: ${application.id}'),
             Text('Name: ${application.studentName}'),
             Text('Year of Study: ${application.yearOfStudy}'),
             Text('Module 1: ${application.module1}'),
@@ -33,7 +34,11 @@ class ApplicationDetailsScreen extends StatelessWidget {
             Text(''),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, RouteManager.applicationForm, arguments: application);
+                Navigator.pushNamed(
+                  context,
+                  RouteManager.applicationForm,
+                  arguments: application,
+                );
               },
               child: const Text("Edit Details"),
             ),
@@ -42,7 +47,8 @@ class ApplicationDetailsScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: const Text("Back")),
+              child: const Text("Back"),
+            ),
           ],
         ),
       ),
