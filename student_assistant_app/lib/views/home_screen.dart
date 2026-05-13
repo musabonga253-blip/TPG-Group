@@ -4,7 +4,7 @@
  * Group          : GROUP_H1
  * Subject        : Technical Programming III (TPG316C)
  */
- 
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/application_viewmodel.dart';
@@ -37,6 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         child: const Icon(Icons.add),
       ),
+
       body: Consumer<ApplicationViewModel>(
         builder: (context, vm, child) {
           if (vm.isLoading) {
@@ -69,5 +70,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
- 

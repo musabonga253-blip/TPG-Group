@@ -39,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       await authService.signInWithEmailPassword(email, password);
       //Navigate to home screen on success
-      Navigator.pushReplacementNamed(context, RouteManager.home);
+      Navigator.pushReplacementNamed(context, '/home');
     } catch (e) {
       //If anything goes wrong, show error message
       if (mounted) {
@@ -54,7 +54,10 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
+      appBar: AppBar(
+        title: const Text('Login'),
+        automaticallyImplyLeading: false,
+      ),
 
       body: Form(
         key: _formKey,
