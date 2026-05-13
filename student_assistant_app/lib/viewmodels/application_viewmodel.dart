@@ -31,8 +31,8 @@ class ApplicationViewModel extends ChangeNotifier {
       id: 2,
       studentName: "Jane Smith",
       yearOfStudy: "2nd year",
-      module1: "PRG262",
-      module2: "DBD261",
+      module1: "SOD216C",
+      module2: "TPG216C",
       status: "Approved",
     ),
   ];
