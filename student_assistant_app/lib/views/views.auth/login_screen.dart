@@ -39,7 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       await authService.signInWithEmailPassword(email, password);
       //Navigate to home screen on success
-      Navigator.pushReplacementNamed(context, RouteManager.home);
+      //Navigator.pushReplacementNamed(context, '/home');
     } catch (e) {
       //If anything goes wrong, show error message
       if (mounted) {
@@ -54,80 +54,86 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
+      appBar: AppBar(
+        title: const Text("Login"),
+        automaticallyImplyLeading: false,
+      ),
 
-      body: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            TextFormField(
-              controller: _emailController,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                border: OutlineInputBorder(),
+      body: Container(
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 50),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                controller: _emailController,
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your username';
+                  }
+                  return null;
+                },
               ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your username';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 15),
+              const SizedBox(height: 15),
 
-            TextFormField(
-              controller: _passwordController,
-              obscureText: !_isPasswordVisible, //Hide password by default
-              decoration: InputDecoration(
-                labelText: 'Password',
-                border: OutlineInputBorder(),
-                //Icon button to toggle password visibility
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _isPasswordVisible
-                        ? Icons.visibility
-                        : Icons.visibility_off,
+              TextFormField(
+                controller: _passwordController,
+                obscureText: !_isPasswordVisible, //Hide password by default
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  border: OutlineInputBorder(),
+                  //Icon button to toggle password visibility
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    },
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _isPasswordVisible = !_isPasswordVisible;
-                    });
-                  },
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your password';
+                  }
+                  if (value.length < 6) {
+                    return 'Password must be at least 6 characters';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 16),
+
+              Consumer<AuthViewModel>(
+                builder: (context, authViewModel, child) {
+                  return ElevatedButton(
+                    onPressed: _handleLogin,
+                    child: const Text('Login'),
+                  );
+                },
+              ),
+              const SizedBox(height: 16),
+
+              //supposed to take you to the sign up screen but It needs to be implemented first
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, RouteManager.signUp);
+                },
+                child: const Text(
+                  'Don\'t have an account? Sign up',
+                  style: TextStyle(color: Colors.blue),
                 ),
               ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter your password';
-                }
-                if (value.length < 6) {
-                  return 'Password must be at least 6 characters';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-
-            Consumer<AuthViewModel>(
-              builder: (context, authViewModel, child) {
-                return ElevatedButton(
-                  onPressed: _handleLogin,
-                  child: const Text('Login'),
-                );
-              },
-            ),
-            const SizedBox(height: 16),
-
-            //supposed to take you to the sign up screen but It needs to be implemented first
-            GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(context, RouteManager.signUp);
-              },
-              child: const Text(
-                'Don\'t have an account? Sign up',
-                style: TextStyle(color: Colors.blue),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

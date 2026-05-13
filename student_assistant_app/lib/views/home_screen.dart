@@ -4,9 +4,10 @@
  * Group          : GROUP_H1
  * Subject        : Technical Programming III (TPG316C)
  */
- 
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:student_assistant_app/service%20layer/auth_service.dart';
 import '../viewmodels/application_viewmodel.dart';
 import '../routes/route_manager.dart';
 
@@ -27,16 +28,30 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  final authService = AuthService();
+  void logout() async {
+    await authService.signOut();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Student Home")),
+      appBar: AppBar(
+        title: const Text("Student Home"),
+
+        //logout button
+        actions: [
+          IconButton(onPressed: logout, icon: const Icon(Icons.logout)),
+        ],
+      ),
+
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.pushNamed(context, RouteManager.applicationForm);
         },
         child: const Icon(Icons.add),
       ),
+
       body: Consumer<ApplicationViewModel>(
         builder: (context, vm, child) {
           if (vm.isLoading) {
@@ -69,5 +84,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
- 
