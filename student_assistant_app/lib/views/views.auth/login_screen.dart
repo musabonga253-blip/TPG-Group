@@ -9,8 +9,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:student_assistant_app/service%20layer/auth_service.dart';
-import '../viewmodels/auth_viewmodel.dart';
-import '../routes/route_manager.dart';
+import '../../viewmodels/auth_viewmodel.dart';
+import '../../routes/route_manager.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
