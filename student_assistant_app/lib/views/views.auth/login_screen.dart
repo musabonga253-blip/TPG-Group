@@ -38,8 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
     //Attempt login
     try {
       await authService.signInWithEmailPassword(email, password);
-      //Navigate to home screen on success
-      // ignore: use_build_context_synchronously
+
       Navigator.pushReplacementNamed(context, '/home');
     } catch (e) {
       //If anything goes wrong, show error message
