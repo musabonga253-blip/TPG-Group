@@ -11,7 +11,7 @@
 //Authenticated, navigate to home screen
 
 import 'package:flutter/material.dart';
-import 'package:student_assistant_app/views/signup_screen.dart' show SignupScreen;
+import 'package:student_assistant_app/views/home_screen.dart';
 import 'package:student_assistant_app/views/views.auth/login_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -36,9 +36,9 @@ class AuthStalker extends StatelessWidget {
         //Check if there is a valid session currently
         final session = snapshot.hasData ? snapshot.data!.session : null;
         if (session != null) {
-          return SignupScreen();
+          return const HomeScreen();
         } else {
-          return LoginScreen();
+          return const LoginScreen();
         }
       },
     );

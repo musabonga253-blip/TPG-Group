@@ -23,6 +23,8 @@ class _SignupScreenState extends State<SignupScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
 
   @override
   void dispose() {
@@ -62,16 +64,13 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Create Account'),
-      ),
+      appBar: AppBar(title: const Text('Create Account')),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
-
               // Email field
               TextFormField(
                 controller: emailController,
@@ -95,10 +94,23 @@ class _SignupScreenState extends State<SignupScreen> {
               // Password field
               TextFormField(
                 controller: passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
+                obscureText: !_isPasswordVisible,
+                decoration: InputDecoration(
                   labelText: 'Password',
                   border: OutlineInputBorder(),
+                  //Icon button to toggle password visibility
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
+                    },
+                  ),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -115,10 +127,23 @@ class _SignupScreenState extends State<SignupScreen> {
               // Confirm password field
               TextFormField(
                 controller: confirmPasswordController,
-                obscureText: true,
-                decoration: const InputDecoration(
+                obscureText: !_isConfirmPasswordVisible,
+                decoration: InputDecoration(
                   labelText: 'Confirm Password',
                   border: OutlineInputBorder(),
+                  //Icon button to toggle password visibility
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _isConfirmPasswordVisible
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                      });
+                    },
+                  ),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -148,7 +173,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
               // Sign up button
               SizedBox(
-                width: double.infinity,
+                //width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _handleSignUp,
                   child: const Text('Sign Up'),
