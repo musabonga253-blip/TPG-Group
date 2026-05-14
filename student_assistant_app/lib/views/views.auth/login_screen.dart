@@ -8,7 +8,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_assistant_app/service%20layer/auth_service.dart';
 import '../../viewmodels/auth_viewmodel.dart';
 import '../../routes/route_manager.dart';
 
@@ -20,8 +19,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  //Retrieve AuthService instance
-  final authService = AuthService();
+  //Retrieve viewmodel instance
 
   //text controllers
   final _formKey = GlobalKey<FormState>();
@@ -34,10 +32,11 @@ class _LoginScreenState extends State<LoginScreen> {
   void _handleLogin() async {
     final email = _emailController.text;
     final password = _passwordController.text;
+    final authViewModel = context.read<AuthViewModel>();
 
     //Attempt login
     try {
-      await authService.signInWithEmailPassword(email, password);
+      await authViewModel.signInWithEmailPassword(email, password);
 
       Navigator.pushReplacementNamed(context, '/home');
     } catch (e) {
