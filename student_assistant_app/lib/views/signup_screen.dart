@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:student_assistant_app/routes/route_manager.dart' show RouteManager;
-import '../viewmodels/auth_viewmodel.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -11,117 +8,161 @@ class SignupScreen extends StatefulWidget {
 }
 
 class _SignupScreenState extends State<SignupScreen> {
+
   final _formKey = GlobalKey<FormState>();
 
-  // ignore: non_constant_identifier_names
-  final SignupNameController = TextEditingController();
-  // ignore: non_constant_identifier_names
-  final SignupPasswordController = TextEditingController();
+  final usernameController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
 
   @override
   void dispose() {
-    SignupNameController.dispose();
-    SignupPasswordController.dispose();
+    usernameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
     super.dispose();
   }
 
-  Future<void> _handleSignup() async {
-    if (_formKey.currentState?.validate() != true) return;
+  void signup() {
 
-    final authViewModel = context.read<AuthViewModel>();
+    if (_formKey.currentState!.validate()) {
 
-    final success = await authViewModel.signup(
-      SignupNameController.text.trim(),
-      SignupPasswordController.text.trim(),
-    );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Signup Successful'),
+        ),
+      );
 
-    if (!mounted) return;
-
-    if (success) {
-      if (authViewModel.isAdmin) {
-        Navigator.pushReplacementNamed(
-          context,
-          RouteManager.adminDashboard,
-        );
-      } else {
-        Navigator.pushReplacementNamed(
-          context,
-          RouteManager.home,
-        );
-      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+      appBar: AppBar(
+        title: const Text("Sign Up"),
+      ),
 
-                TextFormField(
-                  controller: SignupNameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Username',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your username';
-                    }
-                    return null;
-                  },
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+
+        child: Form(
+          key: _formKey,
+
+          child: Column(
+            children: [
+
+              // USERNAME
+
+              TextFormField(
+                controller: usernameController,
+
+                decoration: const InputDecoration(
+                  labelText: 'Username',
+                  border: OutlineInputBorder(),
                 ),
 
-                const SizedBox(height: 15),
+                validator: (value) {
 
-                TextFormField(
-                  controller: SignupPasswordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Password',
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
-                    }
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter username';
+                  }
 
-                    if (value.length < 6) {
-                      return 'Password must be at least 6 characters';
-                    }
+                  return null;
+                },
+              ),
 
-                    return null;
-                  },
+              const SizedBox(height: 20),
+
+              // EMAIL
+
+              TextFormField(
+                controller: emailController,
+
+                decoration: const InputDecoration(
+                  labelText: 'Email',
+                  border: OutlineInputBorder(),
                 ),
 
-                const SizedBox(height: 16),
+                validator: (value) {
 
-                Consumer<AuthViewModel>(
-                  builder: (context, auth, child) {
-                    if (auth.errorMessage != null) {
-                      return Text(
-                        auth.errorMessage!,
-                        style: const TextStyle(color: Colors.blue),
-                      );
-                    }
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter email';
+                  }
 
-                    return const SizedBox.shrink();
-                  },
+                  if (!value.contains('@')) {
+                    return 'Enter valid email';
+                  }
+
+                  return null;
+                },
+              ),
+
+              const SizedBox(height: 20),
+
+              // PASSWORD
+
+              TextFormField(
+                controller: passwordController,
+                obscureText: true,
+
+                decoration: const InputDecoration(
+                  labelText: 'Password',
+                  border: OutlineInputBorder(),
                 ),
 
-                const SizedBox(height: 16),
+                validator: (value) {
 
-                ElevatedButton(
-                  onPressed: _handleSignup,
-                  child: const Text('Sign Up'),
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter password';
+                  }
+
+                  if (value.length < 6) {
+                    return 'Password must be at least 6 characters';
+                  }
+
+                  return null;
+                },
+              ),
+
+              const SizedBox(height: 20),
+
+              // CONFIRM PASSWORD
+
+              TextFormField(
+                controller: confirmPasswordController,
+                obscureText: true,
+
+                decoration: const InputDecoration(
+                  labelText: 'Confirm Password',
+                  border: OutlineInputBorder(),
                 ),
-              ],
-            ),
+
+                validator: (value) {
+
+                  if (value == null || value.isEmpty) {
+                    return 'Please confirm password';
+                  }
+
+                  if (value != passwordController.text) {
+                    return 'Passwords do not match';
+                  }
+
+                  return null;
+                },
+              ),
+
+              const SizedBox(height: 30),
+
+              ElevatedButton(
+                onPressed: signup,
+
+                child: const Text("Sign Up"),
+              ),
+            ],
           ),
         ),
       ),
