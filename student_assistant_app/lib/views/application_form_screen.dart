@@ -34,6 +34,9 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
   bool _addSecondModule = false;
   bool _confirmedEligibility = false;
 
+    // Convenience getter so we don't repeat this check everywhere
+  bool get _isEditing => widget.existingApplication != null;
+
   @override //logic to pre-fill form if we're editing an existing application
 void initState() {
   super.initState();
@@ -72,22 +75,40 @@ void initState() {
 
     final appViewModel = context.read<ApplicationViewModel>();
 
+  // Build the application object from form inputs. If editing, preserve the original ID and status.
     final newApplication = StudentApplication(
-      id: DateTime.now().millisecondsSinceEpoch,
+      id: _isEditing
+          ? widget.existingApplication!.id
+          : DateTime.now().millisecondsSinceEpoch,
       studentName: studentNumberController.text.trim(),
       yearOfStudy: yearOfStudyController.text.trim(),
       module1: courseController.text.trim(),
       module2: _addSecondModule && secondModuleController.text.isNotEmpty
           ? secondModuleController.text.trim()
           : null,
+      // Preserve status when editing; default to Pending for new submissions
+      status: _isEditing ? widget.existingApplication!.status : 'Pending',
     );
 
-    final success = await appViewModel.submitApplication(newApplication);
+
+     final bool success;
+    if (_isEditing) {
+      success = await appViewModel.updateApplication(newApplication);
+    } else {
+      success = await appViewModel.submitApplication(newApplication);
+    }
+
+    if (!mounted) return;
 
     if (success) {
-      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Application submitted successfully!')),
+        SnackBar(
+          content: Text(
+            _isEditing
+                ? 'Application updated successfully!'
+                : 'Application submitted successfully!',
+          ),
+        ),
       );
       // ignore: use_build_context_synchronously
       Navigator.pushReplacementNamed(context, RouteManager.home);
@@ -104,7 +125,9 @@ void initState() {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Application Form')),
+      appBar: AppBar(
+        title: Text(_isEditing ? 'Edit Application' : 'Application Form'),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -209,10 +232,28 @@ void initState() {
               const SizedBox(height: 15),
 
               // His original button — now connected to _handleSubmit
-              ElevatedButton(
-                onPressed: _handleSubmit,
-                child: const Text('Submit Application'),
+              Consumer<ApplicationViewModel>(
+                builder: (context, vm, child) {
+                  return SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: vm.isLoading ? null : _handleSubmit,
+                      child: vm.isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : Text(
+                              _isEditing
+                                  ? 'Update Application'
+                                  : 'Submit Application',
+                            ),
+                    ),
+                  );
+                },
               ),
+
             ],
           ),
         ),

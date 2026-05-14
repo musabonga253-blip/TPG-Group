@@ -87,6 +87,29 @@ class ApplicationViewModel extends ChangeNotifier {
     }
   }
 
+  // UPDATE APPLICATION
+  Future<bool> updateApplication(StudentApplication updated) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    await Future.delayed(const Duration(seconds: 1));
+
+    final index = _applications.indexWhere((app) => app.id == updated.id);
+    if (index == -1) {
+      _errorMessage = 'Application not found.';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+
+    _applications[index] = updated;
+    _isLoading = false;
+    notifyListeners();
+    return true;
+  }
+
+
   // DELETE APPLICATION
   void deleteApplication(int id) {
     _applications.removeWhere((app) => app.id == id);
