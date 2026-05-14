@@ -184,7 +184,7 @@ class _SignupScreenState extends State<SignupScreen> {
               // Already have an account — go to login
               TextButton(
                 onPressed: () {
-                  Navigator.pushReplacementNamed(context, RouteManager.login);
+                  Navigator.pushReplacementNamed(context, '/login');
                 },
                 child: const Text('Already have an account? Login'),
               ),
