@@ -33,15 +33,22 @@ class ApplicationDetailsScreen extends StatelessWidget {
             // ...
             Text(''),
             ElevatedButton(
-              onPressed: () {
-                Navigator.pushNamed(
-                  context,
-                  RouteManager.applicationForm,
-                  arguments: application,
-                );
-              },
-              child: const Text("Edit Details"),
+              onPressed: application.status == "Pending"
+                  ? () {
+                    Navigator.pushNamed(
+                      context,
+                      RouteManager.applicationForm,
+                      arguments: application,
+                    );
+                  }
+             : null, // disables the button when not Pending
+              child: Text(
+                application.status == "Pending"
+                    ? "Edit Details"
+                    : "Edit Locked", // optional label change
+              ),
             ),
+
             Text(''),
             ElevatedButton(
               onPressed: () {

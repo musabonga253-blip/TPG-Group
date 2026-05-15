@@ -51,12 +51,17 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       ),
       body: Consumer<ApplicationViewModel>(
         builder: (context, appViewModel, child) {
-          // No applications yet
+        
+          if (appViewModel.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          
           if (appViewModel.applications.isEmpty) {
             return const Center(child: Text('No applications submitted yet.'));
           }
 
-          // List of all applications
+        
           return ListView.builder(
             itemCount: appViewModel.applications.length,
             itemBuilder: (context, index) {
@@ -64,7 +69,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
 
               return Column(
                 children: [
-                  // Application info
                   Text('Name: ${application.studentName}'),
                   Text('Year: ${application.yearOfStudy}'),
                   Text('Module 1: ${application.module1}'),
@@ -72,7 +76,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     Text('Module 2: ${application.module2}'),
                   Text('Status: ${application.status}'),
 
-                  // Approve button
                   ElevatedButton(
                     onPressed: () {
                       appViewModel.updateStatus(application.id, 'Approved');
@@ -80,7 +83,6 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     child: const Text('Approve'),
                   ),
 
-                  // Reject button
                   ElevatedButton(
                     onPressed: () {
                       appViewModel.updateStatus(application.id, 'Rejected');
@@ -88,10 +90,31 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     child: const Text('Reject'),
                   ),
 
-                  // Remove button
+                  // 🔹 Remove button with confirmation dialog
                   ElevatedButton(
-                    onPressed: () {
-                      appViewModel.deleteApplication(application.id);
+                    onPressed: () async {
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (ctx) => AlertDialog(
+                          title: const Text("Confirm Removal"),
+                          content: const Text(
+                              "Are you sure you want to remove this application?"),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(ctx, false),
+                              child: const Text("Cancel"),
+                            ),
+                            ElevatedButton(
+                              onPressed: () => Navigator.pop(ctx, true),
+                              child: const Text("Remove"),
+                            ),
+                          ],
+                        ),
+                      );
+
+                      if (confirm == true) {
+                        appViewModel.deleteApplication(application.id);
+                      }
                     },
                     child: const Text('Remove'),
                   ),
