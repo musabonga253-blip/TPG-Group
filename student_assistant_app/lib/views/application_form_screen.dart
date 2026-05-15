@@ -7,7 +7,6 @@
  */
 
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -16,10 +15,10 @@ import '../viewmodels/application_viewmodel.dart';
 import '../models/student_application.dart';
 import '../routes/route_manager.dart';
 import '../service layer/storage_service.dart';
+import '../theme/app_colours.dart';
 
 class ApplicationFormScreen extends StatefulWidget {
-  final StudentApplication?
-  existingApplication; // Optional parameter for editing
+  final StudentApplication? existingApplication;
   const ApplicationFormScreen({super.key, this.existingApplication});
 
   @override
@@ -27,7 +26,6 @@ class ApplicationFormScreen extends StatefulWidget {
 }
 
 class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
-  // His original controllers — kept exactly as he had them
   final studentNumberController = TextEditingController();
   final courseController = TextEditingController();
   final yearOfStudyController = TextEditingController();
@@ -43,17 +41,13 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
     }
   }
 
-  // Added: second module controller
   final secondModuleController = TextEditingController();
-
-  // Added: toggles for second module and eligibility
   bool _addSecondModule = false;
   bool _confirmedEligibility = false;
 
-  // Convenience getter so we don't repeat this check everywhere
   bool get _isEditing => widget.existingApplication != null;
 
-  @override //logic to pre-fill form if we're editing an existing application
+  @override
   void initState() {
     super.initState();
     final app = widget.existingApplication;
@@ -65,8 +59,7 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
         _addSecondModule = true;
         secondModuleController.text = app.module2!;
       }
-      _confirmedEligibility =
-          true; // Pre-confirm since it was already submitted
+      _confirmedEligibility = true;
     }
   }
 
@@ -79,7 +72,6 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
     super.dispose();
   }
 
-  // Added: submit handler connected to ViewModel
   Future<void> _handleSubmit() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -102,7 +94,6 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
 
     final appViewModel = context.read<ApplicationViewModel>();
 
-    // Build the application object from form inputs. If editing, preserve the original ID and status.
     final newApplication = StudentApplication(
       id: _isEditing
           ? widget.existingApplication!.id
@@ -114,7 +105,6 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
       module2: _addSecondModule && secondModuleController.text.isNotEmpty
           ? secondModuleController.text.trim()
           : null,
-      // Preserve status when editing; default to Pending for new submissions
       status: _isEditing ? widget.existingApplication!.status : 'Pending',
     );
 
@@ -149,56 +139,87 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
     }
   }
 
+  Widget _fieldLabel(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w500,
+          color: AppColours.onSurface,
+        ),
+      ),
+    );
+  }
+
+  Widget _sectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8, bottom: 16),
+      child: Text(
+        title,
+        style: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          color: AppColours.muted,
+          letterSpacing: 0.6,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditing ? 'Edit Application' : 'Application Form'),
+        title: Text(_isEditing ? 'Edit Application' : 'New Application'),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Form(
           key: _formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // His original year of study field
-              TextFormField(
-                controller: yearOfStudyController,
-                decoration: const InputDecoration(
-                  labelText: 'Current Year of Study',
-                  border: OutlineInputBorder(),
+              // Info banner
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppColours.primaryLight,
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Year of study is required';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 15),
-
-              // His original module field
-              TextFormField(
-                controller: courseController,
-                decoration: const InputDecoration(
-                  labelText: 'Module with academic level',
-                  border: OutlineInputBorder(),
+                child: Row(
+                  children: const [
+                    Icon(
+                      Icons.info_outline_rounded,
+                      color: AppColours.primary,
+                      size: 20,
+                    ),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'Fill in your details to apply for a Student Assistant position.',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: AppColours.primaryDark,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Module with academic level is required';
-                  }
-                  return null;
-                },
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 24),
 
-              // His original student number field
+              _sectionHeader('STUDENT DETAILS'),
+
+              _fieldLabel('Student number'),
               TextFormField(
                 controller: studentNumberController,
+                keyboardType: TextInputType.number,
                 decoration: const InputDecoration(
-                  labelText: 'Student Number',
-                  border: OutlineInputBorder(),
+                  hintText: 'e.g. 224022456',
+                  prefixIcon: Icon(Icons.badge_outlined, size: 20),
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -207,31 +228,92 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 16),
 
-              // Added: second module toggle
-              CheckboxListTile(
-                value: _addSecondModule,
-                title: const Text('Add a second module'),
-                onChanged: (value) {
+              _fieldLabel('Current year of study'),
+              TextFormField(
+                controller: yearOfStudyController,
+                decoration: const InputDecoration(
+                  hintText: 'e.g. 3rd Year',
+                  prefixIcon: Icon(Icons.school_outlined, size: 20),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Year of study is required';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 24),
+
+              _sectionHeader('MODULES'),
+
+              _fieldLabel('Module with academic level'),
+              TextFormField(
+                controller: courseController,
+                decoration: const InputDecoration(
+                  hintText: 'e.g. TPG316C — Technical Programming III',
+                  prefixIcon: Icon(Icons.book_outlined, size: 20),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Module with academic level is required';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 12),
+
+              // Second module toggle
+              InkWell(
+                borderRadius: BorderRadius.circular(10),
+                onTap: () {
                   setState(() {
-                    _addSecondModule = value ?? false;
-                    if (!_addSecondModule) {
-                      secondModuleController.clear();
-                    }
+                    _addSecondModule = !_addSecondModule;
+                    if (!_addSecondModule) secondModuleController.clear();
                   });
                 },
-                controlAffinity: ListTileControlAffinity.leading,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 12,
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: AppColours.divider),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        _addSecondModule
+                            ? Icons.check_box_rounded
+                            : Icons.check_box_outline_blank_rounded,
+                        color: _addSecondModule
+                            ? AppColours.primary
+                            : AppColours.muted,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 10),
+                      const Text(
+                        'Add a second module',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppColours.onSurface,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
 
-              // Added: second module field — only shows if checkbox is ticked
               if (_addSecondModule) ...[
-                const SizedBox(height: 8),
+                const SizedBox(height: 12),
+                _fieldLabel('Second module with academic level'),
                 TextFormField(
                   controller: secondModuleController,
                   decoration: const InputDecoration(
-                    labelText: 'Second Module with academic level',
-                    border: OutlineInputBorder(),
+                    hintText: 'e.g. INF214C — Information Systems II',
+                    prefixIcon: Icon(Icons.book_outlined, size: 20),
                   ),
                   validator: (value) {
                     if (_addSecondModule && (value == null || value.isEmpty)) {
@@ -240,58 +322,134 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 15),
-                const SizedBox(height: 15),
-                Row(
-                  children: [
-                    ElevatedButton.icon(
-                      onPressed: _pickDocument,
-                      icon: const Icon(Icons.upload_file),
-                      label: const Text('Upload Supporting Document'),
-                    ),
-                    if (_pickedDocument != null) ...[
-                      const SizedBox(width: 10),
-                      const Icon(Icons.check_circle, color: Colors.green),
-                      const Text(' Document selected'),
-                    ],
-                  ],
-                ),
               ],
+              const SizedBox(height: 24),
 
-              // Added: eligibility confirmation checkbox
-              CheckboxListTile(
-                value: _confirmedEligibility,
-                title: const Text(
-                  'I confirm that I meet the minimum requirements for the Student Assistant position.',
+              _sectionHeader('SUPPORTING DOCUMENT'),
+
+              // Document upload
+              InkWell(
+                borderRadius: BorderRadius.circular(10),
+                onTap: _pickDocument,
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: _pickedDocument != null
+                        ? AppColours.primaryLight
+                        : AppColours.scaffoldBg,
+                    border: Border.all(
+                      color: _pickedDocument != null
+                          ? AppColours.primary
+                          : AppColours.divider,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        _pickedDocument != null
+                            ? Icons.check_circle_rounded
+                            : Icons.upload_file_rounded,
+                        color: _pickedDocument != null
+                            ? AppColours.primary
+                            : AppColours.muted,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        _pickedDocument != null
+                            ? 'Document selected'
+                            : 'Upload supporting document',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: _pickedDocument != null
+                              ? AppColours.primaryDark
+                              : AppColours.muted,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                onChanged: (value) {
-                  setState(() => _confirmedEligibility = value ?? false);
-                },
-                controlAffinity: ListTileControlAffinity.leading,
               ),
-              const SizedBox(height: 15),
+              const SizedBox(height: 24),
 
-              // His original button — now connected to _handleSubmit
+              _sectionHeader('ELIGIBILITY'),
+
+              // Eligibility confirmation
+              InkWell(
+                borderRadius: BorderRadius.circular(10),
+                onTap: () {
+                  setState(() => _confirmedEligibility = !_confirmedEligibility);
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: _confirmedEligibility
+                        ? AppColours.primaryLight
+                        : AppColours.scaffoldBg,
+                    border: Border.all(
+                      color: _confirmedEligibility
+                          ? AppColours.primary
+                          : AppColours.divider,
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(
+                        _confirmedEligibility
+                            ? Icons.check_circle_rounded
+                            : Icons.radio_button_unchecked_rounded,
+                        color: _confirmedEligibility
+                            ? AppColours.primary
+                            : AppColours.muted,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 10),
+                      const Expanded(
+                        child: Text(
+                          'I confirm that I meet the minimum requirements for the Student Assistant position.',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: AppColours.onSurface,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 28),
+
+              // Submit button
               Consumer<ApplicationViewModel>(
                 builder: (context, vm, child) {
-                  return SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: vm.isLoading ? null : _handleSubmit,
-                      child: vm.isLoading
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : Text(
-                              _isEditing
-                                  ? 'Update Application'
-                                  : 'Submit Application',
+                  return ElevatedButton(
+                    onPressed: vm.isLoading ? null : _handleSubmit,
+                    child: vm.isLoading
+                        ? const SizedBox(
+                            height: 22,
+                            width: 22,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
                             ),
-                    ),
+                          )
+                        : Text(
+                            _isEditing
+                                ? 'Update Application'
+                                : 'Submit Application',
+                          ),
                   );
                 },
+              ),
+              const SizedBox(height: 12),
+
+              OutlinedButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
               ),
             ],
           ),

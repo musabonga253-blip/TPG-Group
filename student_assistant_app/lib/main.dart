@@ -12,6 +12,7 @@ import '../viewmodels/application_viewmodel.dart';
 import '../viewmodels/auth_viewmodel.dart';
 import 'routes/route_manager.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'theme/app_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Student Assistant App',
       debugShowCheckedModeBanner: false,
+      theme: buildAppTheme(),
       home: AuthStalker(),
       onGenerateRoute: RouteManager.generateRoute,
     );
