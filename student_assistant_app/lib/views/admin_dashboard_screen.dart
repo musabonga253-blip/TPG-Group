@@ -36,12 +36,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         automaticallyImplyLeading: false,
         actions: [
           // Logout button
-          TextButton(
+          IconButton(
             onPressed: () {
               context.read<AuthViewModel>().signOut();
               Navigator.pushReplacementNamed(context, RouteManager.login);
             },
-            child: const Text('Logout', style: TextStyle(color: Colors.white)),
+            icon: const Icon(Icons.logout),
+            tooltip: 'Logout',
           ),
         ],
       ),
@@ -90,6 +91,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       icon: const Icon(Icons.description),
                       label: const Text('View Document'),
                     ),
+                  const SizedBox(height: 15),
 
                   ElevatedButton(
                     onPressed: () {
@@ -97,6 +99,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     },
                     child: const Text('Approve'),
                   ),
+                  const SizedBox(height: 15),
 
                   ElevatedButton(
                     onPressed: () {
@@ -104,6 +107,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     },
                     child: const Text('Reject'),
                   ),
+                  const SizedBox(height: 15),
 
                   // 🔹 Remove button with confirmation dialog
                   ElevatedButton(
@@ -120,6 +124,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                               onPressed: () => Navigator.pop(ctx, false),
                               child: const Text("Cancel"),
                             ),
+                            const SizedBox(height: 12),
                             ElevatedButton(
                               onPressed: () => Navigator.pop(ctx, true),
                               child: const Text("Remove"),
