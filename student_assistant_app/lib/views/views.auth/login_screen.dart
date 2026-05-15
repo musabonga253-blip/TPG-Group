@@ -28,22 +28,30 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _isPasswordVisible = false; //State variable to track password visibility
 
+  @override // dispose controllers when the widget is removed from the widget tree to free up resources
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   //When login button is pressed
   void _handleLogin() async {
-    final email = _emailController.text;
-    final password = _passwordController.text;
-    final authViewModel = context.read<AuthViewModel>();
+    if (!_formKey.currentState!.validate()) return;
 
-    //Attempt login
-    try {
-      await authViewModel.signInWithEmailPassword(email, password);
-    } catch (e) {
-      //If anything goes wrong, show error message
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Login failed: $e')));
-      }
+    final authViewModel = context.read<AuthViewModel>();
+    final success = await authViewModel.signInWithEmailPassword(
+      _emailController.text.trim(),
+      _passwordController.text,
+    );
+
+    if (!mounted) return;
+    if (!success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(authViewModel.errorMessage ?? 'Login failed. Please try again.'),
+        ),
+      );
     }
   }
 
