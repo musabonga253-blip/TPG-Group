@@ -8,111 +8,142 @@
 
 import 'package:flutter/material.dart';
 import 'package:student_assistant_app/models/student_application.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ApplicationViewModel extends ChangeNotifier {
+  final SupabaseClient _supabase = Supabase.instance.client;
 
+  List<StudentApplication> _applications = [];
   bool _isLoading = false;
-  String? _errorMessage; // Added
+  String? _errorMessage;
 
-  bool get isLoading => _isLoading;
-  String? get errorMessage => _errorMessage; // Added
-
-  // LIST OF APPLICATIONS
-  final List<StudentApplication> _applications = [
-    StudentApplication(
-      id: 1,
-      studentName: "John Doe",
-      yearOfStudy: "3rd year",
-      module1: "SOD316C",
-      module2: "TPG316C",
-      status: "Pending",
-    ),
-    StudentApplication(
-      id: 2,
-      studentName: "Jane Smith",
-      yearOfStudy: "2nd year",
-      module1: "SOD216C",
-      module2: "TPG216C",
-      status: "Approved",
-    ),
-  ];
-
-  // GET APPLICATIONS
   List<StudentApplication> get applications => _applications;
+  bool get isLoading => _isLoading;
+  String? get errorMessage => _errorMessage;
 
-  // FETCH APPLICATIONS
-  Future<void> fetchApplications() async {
+  // FETCH — isAdmin=true fetches all applications, false fetches only the logged-in user's
+  Future<void> fetchApplications({bool isAdmin = false}) async {
     _isLoading = true;
+    _errorMessage = null;
     notifyListeners();
 
-    await Future.delayed(const Duration(seconds: 1));
+    try {
+      final query = isAdmin
+          ? await _supabase
+                .from('applications')
+                .select() // admin sees all
+          : await _supabase
+                .from('applications')
+                .select()
+                .eq(
+                  'user_id',
+                  _supabase.auth.currentUser!.id,
+                ); // student sees own
 
-    _isLoading = false;
-    notifyListeners();
+      _applications = (query as List)
+          .map((row) => StudentApplication.fromMap(row))
+          .toList();
+    } catch (e) {
+      _errorMessage = 'Failed to fetch applications: $e';
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
-  // SUBMIT APPLICATION - Added
+  // INSERT — submits a new application linked to the logged-in user
   Future<bool> submitApplication(StudentApplication application) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
-    await Future.delayed(const Duration(seconds: 1));
+    try {
+      final userId = _supabase.auth.currentUser!.id;
 
-    // Check if student already submitted an application
-    final alreadyExists = _applications.any(
-      (app) => app.studentName == application.studentName,
-    );
+      // Check if student already has an application
+      final existing = await _supabase
+          .from('applications')
+          .select()
+          .eq('user_id', userId);
 
-    if (alreadyExists) {
-      _errorMessage = 'You have already submitted an application.';
+      if ((existing as List).isNotEmpty) {
+        _errorMessage = 'You have already submitted an application.';
+        return false;
+      }
+
+      await _supabase.from('applications').insert(application.toMap(userId));
+
+      await fetchApplications(); // refresh the list after insert
+      return true;
+    } catch (e) {
+      _errorMessage = 'Failed to submit application: $e';
+      return false;
+    } finally {
       _isLoading = false;
       notifyListeners();
-      return false;
     }
-
-    _applications.add(application);
-    _isLoading = false;
-    notifyListeners();
-    return true;
   }
 
-  // UPDATE STATUS
-  void updateStatus(int id, String newStatus) {
-    final index = _applications.indexWhere((app) => app.id == id);
+  // UPDATE — changes the status of an application (admin use)
+  Future<void> updateStatus(int id, String newStatus) async {
+    _errorMessage = null;
 
-    if (index != -1) {
-      _applications[index] = _applications[index].copyWith(status: newStatus);
+    try {
+      await _supabase
+          .from('applications')
+          .update({'status': newStatus})
+          .eq('id', id);
+
+      // Update locally so UI reflects immediately without a full re-fetch
+      final index = _applications.indexWhere((app) => app.id == id);
+      if (index != -1) {
+        _applications[index] = _applications[index].copyWith(status: newStatus);
+        notifyListeners();
+      }
+    } catch (e) {
+      _errorMessage = 'Failed to update status: $e';
       notifyListeners();
     }
   }
 
-  // UPDATE APPLICATION
-  Future<bool> updateApplication(StudentApplication updated) async {
+  // UPDATE — updates an entire application (student editing)
+  Future<bool> updateApplication(StudentApplication application) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
-    await Future.delayed(const Duration(seconds: 1));
+    try {
+      final userId = _supabase.auth.currentUser!.id;
 
-    final index = _applications.indexWhere((app) => app.id == updated.id);
-    if (index == -1) {
-      _errorMessage = 'Application not found.';
+      await _supabase
+          .from('applications')
+          .update(application.toMap(userId))
+          .eq('id', application.id);
+
+      await fetchApplications(); // refresh the list after update
+      return true;
+    } catch (e) {
+      _errorMessage = 'Failed to update application: $e';
+      return false;
+    } finally {
       _isLoading = false;
       notifyListeners();
-      return false;
     }
-
-    _applications[index] = updated;
-    _isLoading = false;
-    notifyListeners();
-    return true;
   }
 
+  // DELETE — removes an application by id
+  Future<void> deleteApplication(int id) async {
+    _errorMessage = null;
 
-  // DELETE APPLICATION
-  void deleteApplication(int id) {
-    _applications.removeWhere((app) => app.id == id);
-    notifyListeners();
+    try {
+      await _supabase.from('applications').delete().eq('id', id);
+
+      // Remove locally so UI reflects immediately without a full re-fetch
+      _applications.removeWhere((app) => app.id == id);
+      notifyListeners();
+    } catch (e) {
+      _errorMessage = 'Failed to delete application: $e';
+      notifyListeners();
+    }
   }
 }

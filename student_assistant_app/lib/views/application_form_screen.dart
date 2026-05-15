@@ -13,7 +13,8 @@ import '../models/student_application.dart';
 import '../routes/route_manager.dart';
 
 class ApplicationFormScreen extends StatefulWidget {
-  final StudentApplication? existingApplication; // Optional parameter for editing
+  final StudentApplication?
+  existingApplication; // Optional parameter for editing
   const ApplicationFormScreen({super.key, this.existingApplication});
 
   @override
@@ -34,24 +35,25 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
   bool _addSecondModule = false;
   bool _confirmedEligibility = false;
 
-    // Convenience getter so we don't repeat this check everywhere
+  // Convenience getter so we don't repeat this check everywhere
   bool get _isEditing => widget.existingApplication != null;
 
   @override //logic to pre-fill form if we're editing an existing application
-void initState() {
-  super.initState();
-  final app = widget.existingApplication;
-  if (app != null) {
-    studentNumberController.text = app.studentName;
-    yearOfStudyController.text = app.yearOfStudy;
-    courseController.text = app.module1;
-    if (app.module2 != null) {
-      _addSecondModule = true;
-      secondModuleController.text = app.module2!;
+  void initState() {
+    super.initState();
+    final app = widget.existingApplication;
+    if (app != null) {
+      studentNumberController.text = app.studentName;
+      yearOfStudyController.text = app.yearOfStudy;
+      courseController.text = app.module1;
+      if (app.module2 != null) {
+        _addSecondModule = true;
+        secondModuleController.text = app.module2!;
+      }
+      _confirmedEligibility =
+          true; // Pre-confirm since it was already submitted
     }
-    _confirmedEligibility = true; // Pre-confirm since it was already submitted
   }
-}
 
   @override
   void dispose() {
@@ -75,7 +77,7 @@ void initState() {
 
     final appViewModel = context.read<ApplicationViewModel>();
 
-  // Build the application object from form inputs. If editing, preserve the original ID and status.
+    // Build the application object from form inputs. If editing, preserve the original ID and status.
     final newApplication = StudentApplication(
       id: _isEditing
           ? widget.existingApplication!.id
@@ -90,8 +92,7 @@ void initState() {
       status: _isEditing ? widget.existingApplication!.status : 'Pending',
     );
 
-
-     final bool success;
+    final bool success;
     if (_isEditing) {
       success = await appViewModel.updateApplication(newApplication);
     } else {
@@ -134,7 +135,6 @@ void initState() {
           key: _formKey,
           child: Column(
             children: [
-
               // His original year of study field
               TextFormField(
                 controller: yearOfStudyController,
@@ -208,8 +208,7 @@ void initState() {
                     border: OutlineInputBorder(),
                   ),
                   validator: (value) {
-                    if (_addSecondModule &&
-                        (value == null || value.isEmpty)) {
+                    if (_addSecondModule && (value == null || value.isEmpty)) {
                       return 'Please enter the second module';
                     }
                     return null;
@@ -253,7 +252,6 @@ void initState() {
                   );
                 },
               ),
-
             ],
           ),
         ),

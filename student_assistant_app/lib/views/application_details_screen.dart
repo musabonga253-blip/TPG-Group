@@ -6,8 +6,10 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../models/student_application.dart';
 import '../routes/route_manager.dart';
+import '../viewmodels/application_viewmodel.dart';
 
 class ApplicationDetailsScreen extends StatelessWidget {
   final StudentApplication application; //
@@ -17,7 +19,47 @@ class ApplicationDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Application Details")),
+      appBar: AppBar(
+        title: const Text("Application Details"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text('Confirm Delete'),
+                    content: Text(
+                      'Are you sure you want to delete this application?',
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          final viewModel = Provider.of<ApplicationViewModel>(
+                            context,
+                            listen: false,
+                          );
+                          viewModel.deleteApplication(application.id);
+                          Navigator.of(context).pop(); // close dialog
+                          Navigator.of(
+                            context,
+                          ).pop(); // go back to previous screen
+                        },
+                        child: Text('Delete'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ],
+      ),
 
       body: Center(
         child: Column(
@@ -32,6 +74,7 @@ class ApplicationDetailsScreen extends StatelessWidget {
             Text('Status: ${application.status}'),
             // ...
             Text(''),
+
             ElevatedButton(
               onPressed: application.status == "Pending"
                   ? () {

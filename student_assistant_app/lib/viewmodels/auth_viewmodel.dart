@@ -12,7 +12,7 @@ class AuthViewModel extends ChangeNotifier {
   final SupabaseClient _supabase = Supabase.instance.client;
 
   //State variables to track loading, errors, and user role
-  final bool _isAdmin = false;
+  bool _isAdmin = false;
   bool _isLoading = false;
   String? _errorMessage;
 
@@ -21,9 +21,28 @@ class AuthViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   bool get isLoggedIn => _supabase.auth.currentSession != null;
-
   String? get currentUserEmail => _supabase.auth.currentUser?.email;
-  String? get currentUSerId => _supabase.auth.currentUser?.id;
+  String? get currentUserId => _supabase.auth.currentUser?.id;
+
+  // Fetches the user's role from the profiles table and updates _isAdmin
+  Future<void> fetchUserRole() async {
+    final userId = _supabase.auth.currentUser?.id;
+    if (userId == null) return;
+
+    try {
+      final response = await _supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', userId)
+          .single();
+
+      _isAdmin = response['role'] == 'admin';
+    } catch (e) {
+      _isAdmin = false; // default to student if fetch fails
+    }
+
+    notifyListeners();
+  }
 
   //Method to handle user sign up
   Future<bool> signUpWithEmail(String email, String password) async {
@@ -58,7 +77,14 @@ class AuthViewModel extends ChangeNotifier {
         email: email.trim(),
         password: password,
       );
-      return response.user != null;
+
+      //This fetches the role after login
+      if (response.user != null) {
+        await fetchUserRole();
+        return true;
+      }
+      return false;
+
     } catch (e) {
       _errorMessage = e.toString();
       return false;
@@ -74,5 +100,4 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future signup(String trim, String trim2) async {}
 }

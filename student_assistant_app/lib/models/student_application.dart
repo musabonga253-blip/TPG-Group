@@ -39,4 +39,32 @@ class StudentApplication {
       status: status ?? this.status,
     );
   }
+
+   // Maps a Supabase row to a StudentApplication object
+  factory StudentApplication.fromMap(Map<String, dynamic> map) {
+    return StudentApplication(
+      id: map['id'],
+      studentName: map['student_number'],
+      yearOfStudy: map['year_of_study'],
+      module1: map['module1'],
+      module2: map['module2'],
+      status: map['status'] ?? 'Pending',
+    );
+  }
+ 
+  // Maps a StudentApplication object to a Supabase row
+  Map<String, dynamic> toMap(String userId) {
+    return {
+      'user_id': userId,
+      'student_number': studentName,
+      'year_of_study': yearOfStudy,
+      'module1': module1,
+      'module2': module2,
+      'status': status,
+    };
+  }
+
+
+
+
 }

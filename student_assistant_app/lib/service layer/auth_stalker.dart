@@ -11,35 +11,63 @@
 //Authenticated, navigate to home screen
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:student_assistant_app/viewmodels/auth_viewmodel.dart';
+import 'package:student_assistant_app/views/admin_dashboard_screen.dart';
 import 'package:student_assistant_app/views/home_screen.dart';
 import 'package:student_assistant_app/views/views.auth/login_screen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthStalker extends StatelessWidget {
   const AuthStalker({super.key});
-
+ 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      //DO the stalking(listening for auth state changes)
+    return StreamBuilder<AuthState>(
       stream: Supabase.instance.client.auth.onAuthStateChange,
-
-      //Build the UI based on the auth state
       builder: (context, snapshot) {
-        //loading...
+ 
+        // Still connecting to the auth stream
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
         }
-
-        //Check if there is a valid session currently
+ 
         final session = snapshot.hasData ? snapshot.data!.session : null;
-        if (session != null) {
-          return const HomeScreen();
-        } else {
+ 
+        // No session — send to login
+        if (session == null) {
           return const LoginScreen();
         }
+ 
+        // Session exists — check role then route accordingly
+        return Consumer<AuthViewModel>(
+          builder: (context, authViewModel, child) {
+ 
+            // Fetch the role if not loaded yet
+            if (!authViewModel.isLoading && authViewModel.currentUserId != null) {
+              // Use addPostFrameCallback to avoid calling during build
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                authViewModel.fetchUserRole();
+              });
+            }
+ 
+            // Show loading while role is being fetched
+            if (authViewModel.isLoading) {
+              return const Scaffold(
+                body: Center(child: CircularProgressIndicator()),
+              );
+            }
+ 
+            // Route based on role
+            if (authViewModel.isAdmin) {
+              return const AdminDashboardScreen();
+            } else {
+              return const HomeScreen();
+            }
+          },
+        );
       },
     );
   }
