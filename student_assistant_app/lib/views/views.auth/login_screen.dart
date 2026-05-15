@@ -37,8 +37,6 @@ class _LoginScreenState extends State<LoginScreen> {
     //Attempt login
     try {
       await authViewModel.signInWithEmailPassword(email, password);
-
-      Navigator.pushReplacementNamed(context, '/home');
     } catch (e) {
       //If anything goes wrong, show error message
       if (mounted) {

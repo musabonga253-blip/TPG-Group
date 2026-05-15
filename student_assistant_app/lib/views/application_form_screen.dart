@@ -6,11 +6,16 @@
  * Question       : Application Form Screen
  */
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../viewmodels/application_viewmodel.dart';
 import '../models/student_application.dart';
 import '../routes/route_manager.dart';
+import '../service layer/storage_service.dart';
 
 class ApplicationFormScreen extends StatefulWidget {
   final StudentApplication?
@@ -27,6 +32,16 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
   final courseController = TextEditingController();
   final yearOfStudyController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  File? _pickedDocument;
+  String? _uploadedDocumentUrl;
+
+  Future<void> _pickDocument() async {
+    final file = await StorageService.pickImage(ImageSource.gallery);
+    if (file != null) {
+      setState(() => _pickedDocument = file);
+    }
+  }
 
   // Added: second module controller
   final secondModuleController = TextEditingController();
@@ -75,6 +90,16 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
       return;
     }
 
+    // Upload document first if one was picked
+    if (_pickedDocument != null) {
+      final storageService = StorageService();
+      final userId = Supabase.instance.client.auth.currentUser!.id;
+      _uploadedDocumentUrl = await storageService.uploadProfilePicture(
+        userId,
+        _pickedDocument!,
+      );
+    }
+
     final appViewModel = context.read<ApplicationViewModel>();
 
     // Build the application object from form inputs. If editing, preserve the original ID and status.
@@ -84,6 +109,7 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
           : DateTime.now().millisecondsSinceEpoch,
       studentName: studentNumberController.text.trim(),
       yearOfStudy: yearOfStudyController.text.trim(),
+      documentUrl: _uploadedDocumentUrl,
       module1: courseController.text.trim(),
       module2: _addSecondModule && secondModuleController.text.isNotEmpty
           ? secondModuleController.text.trim()
@@ -215,6 +241,21 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
                   },
                 ),
                 const SizedBox(height: 15),
+                const SizedBox(height: 15),
+                Row(
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: _pickDocument,
+                      icon: const Icon(Icons.upload_file),
+                      label: const Text('Upload Supporting Document'),
+                    ),
+                    if (_pickedDocument != null) ...[
+                      const SizedBox(width: 10),
+                      const Icon(Icons.check_circle, color: Colors.green),
+                      const Text(' Document selected'),
+                    ],
+                  ],
+                ),
               ],
 
               // Added: eligibility confirmation checkbox

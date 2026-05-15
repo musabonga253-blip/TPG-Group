@@ -23,13 +23,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   void initState() {
     super.initState();
     Future.microtask(
-      // ignore: use_build_context_synchronously
-      () => context.read<ApplicationViewModel>().fetchApplications(),
+      () =>
+          context.read<ApplicationViewModel>().fetchApplications(isAdmin: true),
     );
-  }
-
-  void logOut() async {
-    await AuthViewModel().signOut();
   }
 
   @override
@@ -51,17 +47,14 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       ),
       body: Consumer<ApplicationViewModel>(
         builder: (context, appViewModel, child) {
-        
           if (appViewModel.isLoading) {
             return const Center(child: CircularProgressIndicator());
           }
 
-          
           if (appViewModel.applications.isEmpty) {
             return const Center(child: Text('No applications submitted yet.'));
           }
 
-        
           return ListView.builder(
             itemCount: appViewModel.applications.length,
             itemBuilder: (context, index) {
@@ -75,6 +68,28 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   if (application.module2 != null)
                     Text('Module 2: ${application.module2}'),
                   Text('Status: ${application.status}'),
+
+                  if (application.documentUrl != null)
+                    TextButton.icon(
+                      onPressed: () {
+                        // Opens the document URL — works for images uploaded via image_picker
+                        showDialog(
+                          context: context,
+                          builder: (_) => AlertDialog(
+                            title: const Text('Supporting Document'),
+                            content: Image.network(application.documentUrl!),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text('Close'),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.description),
+                      label: const Text('View Document'),
+                    ),
 
                   ElevatedButton(
                     onPressed: () {
@@ -98,7 +113,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                         builder: (ctx) => AlertDialog(
                           title: const Text("Confirm Removal"),
                           content: const Text(
-                              "Are you sure you want to remove this application?"),
+                            "Are you sure you want to remove this application?",
+                          ),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(ctx, false),

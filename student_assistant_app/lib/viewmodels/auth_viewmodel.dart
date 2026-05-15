@@ -25,7 +25,11 @@ class AuthViewModel extends ChangeNotifier {
   String? get currentUserId => _supabase.auth.currentUser?.id;
 
   // Fetches the user's role from the profiles table and updates _isAdmin
+  bool _roleFetched = false;
+  bool get roleFetched => _roleFetched;
+
   Future<void> fetchUserRole() async {
+    if (_roleFetched) return; // don't fetch again if already done
     final userId = _supabase.auth.currentUser?.id;
     if (userId == null) return;
 
@@ -35,12 +39,11 @@ class AuthViewModel extends ChangeNotifier {
           .select('role')
           .eq('id', userId)
           .single();
-
       _isAdmin = response['role'] == 'admin';
     } catch (e) {
-      _isAdmin = false; // default to student if fetch fails
+      _isAdmin = false;
     }
-
+    _roleFetched = true;
     notifyListeners();
   }
 
@@ -84,7 +87,6 @@ class AuthViewModel extends ChangeNotifier {
         return true;
       }
       return false;
-
     } catch (e) {
       _errorMessage = e.toString();
       return false;
@@ -94,10 +96,11 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
-  //Signs out the current user
+  // Also reset it on signOut so next login fetches fresh
   Future<void> signOut() async {
     await _supabase.auth.signOut();
+    _isAdmin = false;
+    _roleFetched = false;
     notifyListeners();
   }
-
 }

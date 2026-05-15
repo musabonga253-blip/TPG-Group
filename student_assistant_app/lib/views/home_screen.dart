@@ -32,7 +32,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void logout() async {
     await authService.signOut();
     if (!mounted) return;
-    Navigator.pushReplacementNamed(context, RouteManager.login);
   }
 
   @override

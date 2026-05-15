@@ -20,46 +20,44 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthStalker extends StatelessWidget {
   const AuthStalker({super.key});
- 
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<AuthState>(
       stream: Supabase.instance.client.auth.onAuthStateChange,
       builder: (context, snapshot) {
- 
         // Still connecting to the auth stream
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
         }
- 
+
         final session = snapshot.hasData ? snapshot.data!.session : null;
- 
+
         // No session — send to login
         if (session == null) {
           return const LoginScreen();
         }
- 
+
         // Session exists — check role then route accordingly
         return Consumer<AuthViewModel>(
           builder: (context, authViewModel, child) {
- 
             // Fetch the role if not loaded yet
-            if (!authViewModel.isLoading && authViewModel.currentUserId != null) {
+            if (!authViewModel.isLoading && !authViewModel.roleFetched) {
               // Use addPostFrameCallback to avoid calling during build
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 authViewModel.fetchUserRole();
               });
             }
- 
+
             // Show loading while role is being fetched
             if (authViewModel.isLoading) {
               return const Scaffold(
                 body: Center(child: CircularProgressIndicator()),
               );
             }
- 
+
             // Route based on role
             if (authViewModel.isAdmin) {
               return const AdminDashboardScreen();
