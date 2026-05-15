@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthViewModel extends ChangeNotifier {
-  //Supabase client instance that we will use to interact with our backend
+  //TODO: viewmodel must communicate with authService not supabase
   final SupabaseClient _supabase = Supabase.instance.client;
 
   //State variables to track loading, errors, and user role

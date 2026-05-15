@@ -9,7 +9,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../viewmodels/auth_viewmodel.dart';
-import '../../routes/route_manager.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -51,7 +50,7 @@ class _SignupScreenState extends State<SignupScreen> {
         const SnackBar(content: Text('Account created! Please log in.')),
       );
       // Go to login after successful signup
-      Navigator.pushReplacementNamed(context, RouteManager.login);
+      Navigator.pushReplacementNamed(context, '/login');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

@@ -6,7 +6,7 @@
  */
 import 'package:flutter/material.dart';
 import 'package:student_assistant_app/models/student_application.dart';
-import 'package:student_assistant_app/views/signup_screen.dart';
+import 'package:student_assistant_app/views/views.auth/signup_screen.dart';
 /*import '../models/student_application.dart'; */
 import '../views/views.auth/login_screen.dart';
 import '../views/home_screen.dart';
