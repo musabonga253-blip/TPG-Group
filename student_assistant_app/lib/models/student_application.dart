@@ -7,7 +7,7 @@
 
 class StudentApplication {
   final int id;
-  final String studentName;
+  final String studentNumber;
   final String yearOfStudy;
   final String? documentUrl;
   final String module1;
@@ -16,7 +16,7 @@ class StudentApplication {
 
   StudentApplication({
     required this.id,
-    required this.studentName,
+    required this.studentNumber,
     required this.yearOfStudy,
     required this.documentUrl,
     required this.module1,
@@ -35,7 +35,7 @@ class StudentApplication {
   }) {
     return StudentApplication(
       id: id ?? this.id,
-      studentName: studentName ?? this.studentName,
+      studentNumber: studentName ?? this.studentNumber,
       yearOfStudy: yearOfStudy ?? this.yearOfStudy,
       documentUrl: documentUrl ?? this.documentUrl,
       module1: module1 ?? this.module1,
@@ -48,7 +48,7 @@ class StudentApplication {
   factory StudentApplication.fromMap(Map<String, dynamic> map) {
     return StudentApplication(
       id: map['id'],
-      studentName: map['student_number'],
+      studentNumber: map['student_number'],
       yearOfStudy: map['year_of_study'],
       documentUrl: map['documentUrl'],
       module1: map['module1'],
@@ -61,7 +61,7 @@ class StudentApplication {
   Map<String, dynamic> toMap(String userId) {
     return {
       'user_id': userId,
-      'student_number': studentName,
+      'student_number': studentNumber,
       'year_of_study': yearOfStudy,
       if (documentUrl != null) 'document_url': documentUrl,
       'module1': module1,

@@ -156,10 +156,7 @@ class ApplicationDetailsScreen extends StatelessWidget {
                     children: [
                       const Text(
                         'Application status',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: AppColours.muted,
-                        ),
+                        style: TextStyle(fontSize: 11, color: AppColours.muted),
                       ),
                       Text(
                         application.status,
@@ -197,7 +194,7 @@ class ApplicationDetailsScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      application.studentName,
+                      application.studentNumber,
                       style: const TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w700,

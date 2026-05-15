@@ -7,7 +7,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:student_assistant_app/service%20layer/auth_service.dart';
+import 'package:student_assistant_app/viewmodels/auth_viewmodel.dart';
 import '../viewmodels/application_viewmodel.dart';
 import '../routes/route_manager.dart';
 import '../theme/app_colours.dart';
@@ -29,10 +29,8 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  final authService = AuthService();
   void logout() async {
-    await authService.signOut();
-    if (!mounted) return;
+    await context.read<AuthViewModel>().signOut();
   }
 
   Color _statusColor(String status) {

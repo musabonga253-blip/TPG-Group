@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/application_viewmodel.dart';
 import '../viewmodels/auth_viewmodel.dart';
-import '../routes/route_manager.dart';
 import '../theme/app_colours.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
@@ -24,7 +23,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   void initState() {
     super.initState();
     Future.microtask(
-      () => context.read<ApplicationViewModel>().fetchApplications(isAdmin: true),
+      () =>
+          context.read<ApplicationViewModel>().fetchApplications(isAdmin: true),
     );
   }
 
@@ -58,9 +58,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
-            onPressed: () {
-              context.read<AuthViewModel>().signOut();
-              Navigator.pushReplacementNamed(context, RouteManager.login);
+            onPressed: () async {
+              await context.read<AuthViewModel>().signOut();
             },
             icon: const Icon(Icons.logout_rounded),
             tooltip: 'Logout',
@@ -191,7 +190,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        application.studentName,
+                                        application.studentNumber,
                                         style: const TextStyle(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w600,
@@ -263,8 +262,8 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                         application.documentUrl!,
                                         errorBuilder: (_, __, ___) =>
                                             const Text(
-                                          'Failed to load document',
-                                        ),
+                                              'Failed to load document',
+                                            ),
                                       ),
                                       actions: [
                                         TextButton(
@@ -334,8 +333,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                                       context: context,
                                       builder: (ctx) => AlertDialog(
                                         shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(14),
+                                          borderRadius: BorderRadius.circular(
+                                            14,
+                                          ),
                                         ),
                                         title: const Text('Confirm Removal'),
                                         content: const Text(
@@ -391,11 +391,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       ),
       child: Text(
         label,
-        style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-          color: fg,
-        ),
+        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: fg),
       ),
     );
   }

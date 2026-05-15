@@ -52,7 +52,7 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
     super.initState();
     final app = widget.existingApplication;
     if (app != null) {
-      studentNumberController.text = app.studentName;
+      studentNumberController.text = app.studentNumber;
       yearOfStudyController.text = app.yearOfStudy;
       courseController.text = app.module1;
       if (app.module2 != null) {
@@ -98,7 +98,7 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
       id: _isEditing
           ? widget.existingApplication!.id
           : DateTime.now().millisecondsSinceEpoch,
-      studentName: studentNumberController.text.trim(),
+      studentNumber: studentNumberController.text.trim(),
       yearOfStudy: yearOfStudyController.text.trim(),
       documentUrl: _uploadedDocumentUrl,
       module1: courseController.text.trim(),
@@ -380,7 +380,9 @@ class _ApplicationFormScreenState extends State<ApplicationFormScreen> {
               InkWell(
                 borderRadius: BorderRadius.circular(10),
                 onTap: () {
-                  setState(() => _confirmedEligibility = !_confirmedEligibility);
+                  setState(
+                    () => _confirmedEligibility = !_confirmedEligibility,
+                  );
                 },
                 child: Container(
                   padding: const EdgeInsets.all(14),
